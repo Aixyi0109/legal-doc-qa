@@ -22,3 +22,36 @@ legal-doc-qa/
 ├── data/            # 测试用 PDF
 └── docker/
 ```
+
+## 如何运行
+
+### 环境准备
+
+```bash
+# 安装依赖
+uv sync
+
+# 配置环境变量（复制模板后填入 API Key）
+cp .env.example .env
+```
+
+### 启动服务
+
+```bash
+uv run uvicorn main:app --reload
+```
+
+服务启动后访问 http://localhost:8000/docs 查看接口文档。
+
+### 上传 PDF
+
+```bash
+curl -X POST http://localhost:8000/upload \
+  -F "file=@data/民法典.pdf"
+```
+
+### 运行测试
+
+```bash
+uv run pytest tests/ -v
+```
