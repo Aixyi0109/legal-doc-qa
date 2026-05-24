@@ -38,6 +38,36 @@
 
 ---
 
+## 为什么 chunk 带三个 metadata 字段
+
+**决策**：每个 chunk 存入 Chroma 时携带 `source_file`、`page`、`chunk_index` 三个 metadata 字段。
+
+**原因**：
+
+1. **`source_file`**：支持多文档场景。日后系统里有多份合同时，可以按文件过滤检索，不会把不同文档的内容混在一起回答。
+2. **`page`**：RAG 回答需要精确引用（"见第 10 页第 28 条"），法律场景不能没有出处。
+3. **`chunk_index`**：全局唯一编号，方便调试（"第 42 块内容是什么"）和后期 Eval 时追踪具体 chunk 的检索命中情况。
+
+**代价**：`add()` 需要多传几个字段，代码稍复杂，但值得。
+
+**相关代码**：`app/ingestion/pipeline.py`（注入 `source_file`）、`app/ingestion/chunker.py`（生成 `chunk_index`）、`app/ingestion/store.py`（写入 metadatas）。
+
+---
+
+## 为什么用 bge-m3 而不是 bge-large-zh 或 m3e-base
+
+**决策**：Embedding 模型选 `BAAI/bge-m3`。
+
+**原因**：
+
+1. **长文档支持**：bge-m3 最大输入 8192 tokens；bge-large-zh 和 m3e-base 上限是 512 tokens，民法典单条款就可能超限。
+2. **多语言**：法律文档里有英文术语、数字，bge-m3 覆盖 100+ 语言，不需要担心混合语言的 embedding 质量下降。
+3. **社区活跃**：BAAI 持续维护，文档完整，sentence-transformers 原生支持。
+
+**代价**：模型较大（约 2.3GB），首次运行需要下载，冷启动慢。生产环境应在服务启动时预加载（FastAPI lifespan）。
+
+---
+
 ## 为什么先手写 chunker 再用 LangChain
 
 **决策**：自己实现 `FixedLengthChunker`，而不是直接用 `LangChain` 的 `RecursiveCharacterTextSplitter`。
