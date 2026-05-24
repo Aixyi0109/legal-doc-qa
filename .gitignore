@@ -14,3 +14,4 @@ wheels/
 
 # Data files (PDFs, uploaded files)
 data/
+chroma_db/
