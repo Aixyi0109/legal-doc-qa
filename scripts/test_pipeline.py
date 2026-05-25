@@ -3,7 +3,7 @@ from app.ingestion import chunker, embedder, parser, store
 
 if __name__ == "__main__":
     pipeline = IngestionPipeline(
-        chunker=chunker.Chunker(50, 10),
+        chunker=chunker.Chunker(300, 30),
         embedder=embedder.Embedder(),
         parser=parser.PDFParser(),
         store=store.VectorStore()
