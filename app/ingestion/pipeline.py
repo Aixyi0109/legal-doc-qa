@@ -9,7 +9,7 @@ class IngestionPipeline:
         self.parser = parser
         self.store = store
 
-    def ingest(self, file_path: Path):
+    def ingest(self, file_path: Path) -> dict:
         file_path = Path(file_path)
 
         # Step 1: Parse the document
@@ -25,3 +25,5 @@ class IngestionPipeline:
 
         # Step 4: Store the embeddings and associated metadata
         self.store.add(embeddings)
+
+        return {"pages": len(parsed_content), "chunks": len(chunks)}
