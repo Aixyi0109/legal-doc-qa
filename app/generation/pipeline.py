@@ -10,3 +10,10 @@ class RAGPipeline:
         retrieved_chunks = self.retriever.retrieve(query, source_file=source_file)
         answer = self.generator.generate(query, retrieved_chunks)
         return {"answer": answer, "sources": retrieved_chunks}
+    
+    def query_stream(self, query: str, source_file: str):
+        retrieved_chunks = self.retriever.retrieve(query, source_file=source_file)
+        for token in self.generator.generate_stream(query, retrieved_chunks):
+            yield {"type": "token", "data": token}
+        yield {"type": "sources", "data": retrieved_chunks}
+    
