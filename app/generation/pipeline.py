@@ -6,7 +6,7 @@ class RAGPipeline:
         self.retriever = retriever
         self.generator = generator
 
-    def query(self, query: str, source_file: str) -> str:
+    def query(self, query: str, source_file: str) -> dict:
         retrieved_chunks = self.retriever.retrieve(query, source_file=source_file)
         answer = self.generator.generate(query, retrieved_chunks)
-        return answer
+        return {"answer": answer, "sources": retrieved_chunks}
