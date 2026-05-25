@@ -15,3 +15,6 @@ wheels/
 # Data files (PDFs, uploaded files)
 data/
 chroma_db/
+
+# 环境变量（含 API Key，不能提交）
+.env

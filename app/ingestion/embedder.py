@@ -10,3 +10,6 @@ class Embedder:
         for i, chunk in enumerate(chunks):
             chunk["embedding"] = embeddings[i]
         return chunks
+    
+    def embed_query(self, text: str) -> list[float]:
+        return self.model.encode(text).tolist()

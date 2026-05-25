@@ -19,3 +19,22 @@ class VectorStore:
             documents=texts,
             embeddings=embeddings
         )
+    
+    def query(self, query_embedding: list[float], top_k: int = 5, source_file: str = None):
+        kwargs = {"query_embeddings": [query_embedding], "n_results": top_k}
+        if source_file:
+            kwargs["where"] = {"source_file": source_file}
+        results = self.collection.query(**kwargs)
+        
+        # 处理成list[dict]的格式
+        return [
+            {
+                "id": id,
+                "text": document,
+                "page": metadata["page"],
+                "source_file": metadata["source_file"],
+                "chunk_index": metadata["chunk_index"],
+                "distance": distance    
+            }
+            for id, document, metadata, distance in zip(results["ids"][0], results["documents"][0], results["metadatas"][0], results["distances"][0])
+        ]
