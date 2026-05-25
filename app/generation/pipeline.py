@@ -1,0 +1,12 @@
+from .generator import Generator
+from app.retrieval.retriever import Retriever
+
+class RAGPipeline:
+    def __init__(self, retriever: "Retriever", generator: "Generator"):
+        self.retriever = retriever
+        self.generator = generator
+
+    def query(self, query: str, source_file: str) -> str:
+        retrieved_chunks = self.retriever.retrieve(query, source_file=source_file)
+        answer = self.generator.generate(query, retrieved_chunks)
+        return answer
